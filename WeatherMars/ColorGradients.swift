@@ -13,5 +13,8 @@ import UIKit
 struct ColorGradients {
     static let salmonPink = UIColor(red: 255.0/255.0, green: 175.0/255.0, blue: 189.0/255.0, alpha: 1.0)
     static let salmonOrange = UIColor(red: 255.0/255.0, green: 195.0/255.0, blue: 160.0/255.0, alpha: 1.0)
+    static let paleGreen = UIColor(red: 153.0/255.0, green: 255.0/255.0, blue: 204.0/255.0, alpha: 1.0)
+    static let paleBlue = UIColor(red: 153.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+    static let purple = UIColor(red: 153.0/255.0, green: 153.0/255.0, blue: 255.0/255.0, alpha: 1.0)
     static let orange = UIColor(red: 255.0/255.0, green: 175.0/255.0, blue: 72.0/255.0, alpha: 1.0)
 }

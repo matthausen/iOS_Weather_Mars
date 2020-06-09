@@ -9,9 +9,18 @@
 import Foundation
 
 struct WeatherResponse: Codable {
-    let SOL: AT
+    let sol: SOL
+    let sol_keys: [String]?
+    
+    enum TopLevelCodingKeys: String, CodingKey {
+        case sol
+    }
+}
+
+struct SOL: Codable {
+    let at: AT
     let Season: String
-    let WD: WD
+    let Wd: WD
 }
 
 struct AT: Codable {

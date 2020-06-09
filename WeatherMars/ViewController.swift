@@ -27,66 +27,84 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         
         // Setup the scroll View
         scrollView.delegate = self
-        cards = createCards()
-        setupCardScrollView(cards: cards)
+        // cards = createCard()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        // Fetch the weather
         fetchMarsWeather(url: url!)
     }
     
     //MARK: - Fetch Mars Weather Method
     func fetchMarsWeather(url: URL) {
         let task = URLSession.shared.dataTask(with: url as URL, completionHandler: {data, response, error in
-            guard error == nil else {return}
-            guard let data = data else {return}
-            
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any] {
-                    print("NASA API Response: ")
-                    print(json)
+            var sol_keys: [String]
+            if let data =  data, error == nil {
+                do {
+                    guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any] else {return}
+                    sol_keys = json["sol_keys"] as! [String]
+                    for sol in sol_keys {
+                        let card = self.createCard()
+                        self.cards.append(card)
+                        print(json[sol])
+                    }
+                    DispatchQueue.main.async {
+                        // Function to update the labels with weathe info here
+                        // self.setWeather()
+                        self.setupCardScrollView(cards: self.cards)
+                    }
+                } catch {
+                    print("Error fetching weather information")
+                    self.fetchError()
                 }
-            } catch let error {
-                print(error.localizedDescription)
             }
         })
         
         task.resume()
     }
     
-    // MARK: - Setup the scrollView methods
-    func createCards() -> [UIImageView] {
-        var card1 : UIImageView
-        card1 = UIImageView(frame:CGRect(x: 0, y: 0, width: 350, height: 350));
-        card1.setGradientBackground(colorTop: ColorGradients.paleGreen, colorBottom: ColorGradients.salmonPink)
-        card1.layer.cornerRadius = 10;
-        card1.clipsToBounds = true;
+    // MARK: - Create the card
+    func createCard() -> UIImageView {
+        var card : UIImageView
         
-        var card2 : UIImageView
-        card2 = UIImageView(frame:CGRect(x: 0, y: 0, width: 350, height: 350));
-        card2.setGradientBackground(colorTop: ColorGradients.paleBlue, colorBottom: ColorGradients.paleGreen)
-        card2.layer.cornerRadius = 10;
-        card2.clipsToBounds = true;
+        // set the cardView
+        card = UIImageView(frame:CGRect(x: 0, y: 0, width: 350, height: 350));
+        card.setGradientBackground(colorTop: ColorGradients.paleGreen, colorBottom: ColorGradients.salmonPink)
+        card.layer.cornerRadius = 10;
+        card.clipsToBounds = true;
         
-        var card3 : UIImageView
-        card3 = UIImageView(frame:CGRect(x: 0, y: 0, width: 350, height: 350));
-        card3.setGradientBackground(colorTop: ColorGradients.purple, colorBottom: ColorGradients.paleBlue)
-        card3.layer.cornerRadius = 10;
-        card3.clipsToBounds = true;
-        
-        return [card1, card2, card3]
+        return card
     }
     
+    // MARK: - Set the scrollView
     func setupCardScrollView(cards: [UIImageView]) {
         scrollView.frame = CGRect(x: 0, y: 0, width: 400, height: 200)
         scrollView.contentSize = CGSize(width: 400 * CGFloat(cards.count), height: 200)
         scrollView.isPagingEnabled = true
-        
+                
         for i in 0 ..< cards.count {
             cards[i].frame = CGRect(x: view.frame.width * CGFloat(i), y: 0, width: 300, height: 300)
+            
+            // set day of the year
+            var sol : UILabel
+            sol = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
+            sol.center = CGPoint(x: 160, y: 284)
+            sol.textAlignment = .center
+            sol.text = "Sol: 565"
+            
             scrollView.addSubview(cards[i])
+            // scrollView.addSubview(sol)
         }
+    }
+    
+    // MARK: - Set error view if API fails to return data
+    func fetchError() -> UIImageView {
+        let errorView:UIImageView
+        errorView = UIImageView(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
+        errorView.backgroundColor = .red
+        return errorView
     }
 
 }
